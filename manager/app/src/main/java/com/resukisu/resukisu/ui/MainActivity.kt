@@ -354,16 +354,18 @@ class MainActivity : ComponentActivity() {
                                                     .toString() || exitingPageKey == content.contentKey.toString()
                                             ) {
                                                 val animatedBackgroundColor =
-                                                    if (CardConfig.isCustomBackgroundEnabled && gestureState?.transitionState is InProgress) {
-                                                        transition.animateColor(transitionSpec = {
-                                                            tween(800)
-                                                        }, label = "BackgroundMorph") { state ->
-                                                            if (!CardConfig.isCustomBackgroundEnabled) MaterialTheme.colorScheme.surfaceContainer
-                                                            when (state) {
-                                                                EnterExitState.PostExit -> MaterialTheme.colorScheme.surfaceContainer
-                                                                else -> Color.Transparent
-                                                            }
-                                                        }.value
+                                                    if (CardConfig.isCustomBackgroundEnabled) {
+                                                        if (gestureState?.transitionState is InProgress) {
+                                                            transition.animateColor(transitionSpec = {
+                                                                tween(800)
+                                                            }, label = "BackgroundMorph") { state ->
+                                                                if (!CardConfig.isCustomBackgroundEnabled) MaterialTheme.colorScheme.surfaceContainer
+                                                                when (state) {
+                                                                    EnterExitState.PostExit -> MaterialTheme.colorScheme.surfaceContainer
+                                                                    else -> Color.Transparent
+                                                                }
+                                                            }.value
+                                                        } else Color.Transparent
                                                     } else MaterialTheme.colorScheme.surfaceContainer
 
                                                 val animatedScale by transition.animateFloat(
