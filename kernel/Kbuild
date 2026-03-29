@@ -92,7 +92,7 @@ ccflags-y += -DKSU_VERSION=$(KSU_VERSION)
 ccflags-y += -DKSU_VERSION_FULL=\"$(KSU_VERSION_FULL)\"
 
 ifeq ($(CONFIG_KSU_MULTI_MANAGER_SUPPORT), y)
-$(info -- Supported Unofficial Manager: MKSU, RKSU, KOWSU, SukiSU-Ultra, ReSukiSU )
+$(info -- Supported Unofficial Manager: MKSU, RKSU, KOWSU, SukiSU-Ultra, ReSukiSU, MamboSU, KernelSU-Next, Wild KSU )
 ccflags-y += -DCONFIG_KSU_MULTI_MANAGER_SUPPORT
 endif
 
