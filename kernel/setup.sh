@@ -41,13 +41,13 @@ setup_kernelsu() {
 	echo "[+] Setting up KernelSU..."
 	# Clone the repository and rename it to KernelSU
 	if [ ! -d "$GKI_ROOT/KernelSU" ]; then
-		git clone https://github.com/ReSukiSU/ReSukiSU KernelSU
+		git clone https://github.com/MrShockWAVEog/ReSukiSU KernelSU
 		echo "[+] Repository cloned."
 	fi
 	cd "$GKI_ROOT/KernelSU"
 	git stash && echo "[-] Stashed current changes."
 	if [ "$(git status | grep -Po 'v\d+(\.\d+)*' | head -n1)" ]; then
-		git checkout main && echo "[-] Switched to main branch."
+		git checkout shockwave && echo "[-] Switched to shockwave branch."
 	fi
 	git pull && echo "[+] Repository updated."
 	if [ -z "${1-}" ]; then
