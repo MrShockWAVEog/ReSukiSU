@@ -167,6 +167,15 @@ DEFINE_KSU_UAPI_CONST(__u8, KSU_UMOUNT_GETSIZE_NEW, 200) // get list size (new (
 DEFINE_KSU_UAPI_CONST(__u8, KSU_UMOUNT_GETLIST_NEW, 201) // get list (new (with flags))
 
 // Downstream supercall struct
+/* KernelSU Next compatibility: these buffer sizes are part of its ABI. */
+struct ksu_get_hook_mode_cmd {
+    char mode[16];
+};
+
+struct ksu_get_version_tag_cmd {
+    char tag[32];
+};
+
 struct ksu_get_full_version_cmd {
     char version_full[KSU_FULL_VERSION_STRING]; // Output: full version string
 };
@@ -236,6 +245,8 @@ DEFINE_KSU_UAPI_CONST(__u32, KSU_IOCTL_GET_SULOG_FD, _IOW('K', 20, struct ksu_ge
 DEFINE_KSU_UAPI_CONST(__u32, KSU_IOCTL_DISABLE_ESCAPE_TO_ROOT, _IO('K', 21))
 
 // Downstream add IOCTL command definitions
+DEFINE_KSU_UAPI_CONST(__u32, KSU_IOCTL_GET_HOOK_MODE, _IOC(_IOC_READ, 'K', 98, 0))
+DEFINE_KSU_UAPI_CONST(__u32, KSU_IOCTL_GET_VERSION_TAG, _IOC(_IOC_READ, 'K', 99, 0))
 DEFINE_KSU_UAPI_CONST(__u32, KSU_IOCTL_GET_FULL_VERSION, _IOC(_IOC_READ, 'K', 100, 0))
 DEFINE_KSU_UAPI_CONST(__u32, KSU_IOCTL_HOOK_TYPE, _IOC(_IOC_READ, 'K', 101, 0))
 // 102 = ENABLE_KPM (KernelPatch Module),deprecated
