@@ -60,6 +60,10 @@ static uint32_t ksuver_override = 0;
 static uint32_t ksuflags_override = 0;
 #endif
 
+/* Compatibility values reported only to the verified KernelSU Next manager. */
+#define KSUNEXT_VERSION 33301
+#define KSUNEXT_VERSION_TAG "v3.4.0"
+
 static int do_get_info(void __user *arg)
 {
     struct ksu_get_info_cmd cmd = { .version = KERNEL_SU_VERSION, .flags = 0 };
@@ -89,6 +93,9 @@ static int do_get_info(void __user *arg)
     if (ksuflags_override)
         cmd.flags = ksuflags_override;
 #endif
+
+    if (is_ksunext_manager())
+        cmd.version = KSUNEXT_VERSION;
 
     if (copy_to_user(arg, &cmd, sizeof(cmd))) {
         pr_err("get_version: copy_to_user failed\n");
@@ -127,6 +134,9 @@ static int do_get_info_legacy(void __user *arg)
     if (ksuflags_override)
         cmd.flags = ksuflags_override;
 #endif
+
+    if (is_ksunext_manager())
+        cmd.version = KSUNEXT_VERSION;
 
     if (copy_to_user(arg, &cmd, sizeof(cmd))) {
         pr_err("get_version: copy_to_user failed\n");
@@ -905,11 +915,11 @@ static int do_get_version_tag(void __user *arg)
 {
     struct ksu_get_version_tag_cmd cmd = { 0 };
 
-    /* Report this ReSukiSU build, bounded by Next's smaller version buffer. */
+    const char *tag = is_ksunext_manager() ? KSUNEXT_VERSION_TAG : KSU_VERSION_FULL;
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 13, 0)
-    strscpy(cmd.tag, KSU_VERSION_FULL, sizeof(cmd.tag));
+    strscpy(cmd.tag, tag, sizeof(cmd.tag));
 #else
-    strlcpy(cmd.tag, KSU_VERSION_FULL, sizeof(cmd.tag));
+    strlcpy(cmd.tag, tag, sizeof(cmd.tag));
 #endif
 
     if (copy_to_user(arg, &cmd, sizeof(cmd))) {
@@ -924,11 +934,12 @@ static int do_get_version_tag(void __user *arg)
 static int do_get_full_version(void __user *arg)
 {
     struct ksu_get_full_version_cmd cmd = { 0 };
+    const char *version = is_ksunext_manager() ? KSUNEXT_VERSION_TAG : KSU_VERSION_FULL;
 
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 13, 0)
-    strscpy(cmd.version_full, KSU_VERSION_FULL, sizeof(cmd.version_full));
+    strscpy(cmd.version_full, version, sizeof(cmd.version_full));
 #else
-    strlcpy(cmd.version_full, KSU_VERSION_FULL, sizeof(cmd.version_full));
+    strlcpy(cmd.version_full, version, sizeof(cmd.version_full));
 #endif
 
     if (copy_to_user(arg, &cmd, sizeof(cmd))) {

@@ -6,6 +6,7 @@
 
 #include "compat/kernel_compat.h"
 
+#define KSU_SIGNATURE_INDEX_KSUNEXT 7
 #define KSU_SIGNATURE_INDEX_DYNAMIC_MANAGER 255
 #define KSU_SIGNATURE_INDEX_KSU_DEBUG 254
 #define KSU_SIGNATURE_INDEX_KSU_TOOLKIT 253
@@ -72,5 +73,16 @@ extern void ksu_unregister_manager_by_signature_index(u8 signature_index);
 extern int ksu_get_manager_signature_index_by_appid(u16 appid);
 extern bool ksu_has_manager(void);
 #endif
+
+static inline bool is_ksunext_manager(void)
+{
+#if defined(CONFIG_KSU_MULTI_MANAGER_SUPPORT) && !defined(CONFIG_KSU_DISABLE_MANAGER)
+    u16 appid = ksu_get_uid_t(current_uid()) % PER_USER_RANGE;
+
+    return ksu_get_manager_signature_index_by_appid(appid) == KSU_SIGNATURE_INDEX_KSUNEXT;
+#else
+    return false;
+#endif
+}
 
 #endif
