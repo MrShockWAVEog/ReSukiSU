@@ -18,6 +18,7 @@
 #include "klog.h" // IWYU pragma: keep
 #include "runtime/ksud.h"
 #include "feature/kernel_umount.h"
+#include "feature/toolkit.h"
 #include "compat/kernel_compat.h"
 #include "manager/manager_identity.h"
 #include "selinux/selinux.h"
@@ -48,6 +49,7 @@ static int do_grant_root(void __user *arg)
     __u32 audit_uid = ksu_get_uid_t(current_uid());
     __u32 audit_euid = ksu_get_uid_t(current_euid());
 
+    ksu_toolkit_log('i', ksu_get_uid_t(current_uid()));
     pr_info("allow root for: %d\n", audit_uid);
     ret = escape_with_root_profile();
     ksu_sulog_emit_grant_root(ret, audit_uid, audit_euid, GFP_KERNEL);
@@ -663,6 +665,17 @@ static int ksu_umount_list_getsize(struct ksu_manage_try_umount_cmd *cmd, bool l
     // debug
     pr_info("cmd_manage_try_umount: total_size: %zu\n", total_size);
 
+    /* Toolkit mode 107 has a fixed 32-bit result, even on 64-bit kernels. */
+    if (legacy) {
+        u32 legacy_size;
+
+        if (total_size > (u32)~0U)
+            return -EOVERFLOW;
+        legacy_size = total_size;
+        return copy_to_user((void __user *)(unsigned long)cmd->arg,
+                            &legacy_size, sizeof(legacy_size)) ? -EFAULT : 0;
+    }
+
     if (copy_to_user((size_t __user *)cmd->arg, &total_size, sizeof(total_size)))
         return -EFAULT;
 
@@ -1139,6 +1152,13 @@ int ksu_handle_susfs_cmd(unsigned int cmd, void __user **arg)
 int ksu_try_handle_toolkit_cmd(int magic2, unsigned int cmd, void __user **arg)
 {
     u64 reply = (u64)*arg;
+
+    if (magic2 == GET_SULOG_DUMP_V2) {
+        if (!ksu_toolkit_dump_log(*arg) &&
+            copy_to_user(*arg, &reply, sizeof(reply)))
+            pr_err("toolkit: log dump acknowledgement failed\n");
+        return 1;
+    }
 
     if (magic2 == CHANGE_MANAGER_UID) {
         pr_info("handle_toolkit_cmd: ksu_set_manager_appid to: %d\n", cmd);

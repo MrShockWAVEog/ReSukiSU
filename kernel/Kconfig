@@ -18,7 +18,7 @@ config KSU_DEBUG
 config KSU_TOOLKIT_SUPPORT
       bool "KernelSU toolkit support"
       depends on KSU
-      default n
+      default y
       help
         Enable KernelSU Toolkit (https://github.com/backslashxx/ksu_toolkit) support.
         For testing and debugging purposes.
@@ -28,8 +28,8 @@ config KSU_TOOLKIT_SUPPORT
         3: CHANGE_SPOOF_UNAME sys_reboot extensions
         4: CHANGE_KSUFLAGS sys_reboot_extensions
         5: allow userspace pull list entries (always supported)
-        6: sulog (Not supported for now, use ksu's upstream sulog feature instead)
-        If you don't know what is that, DON'T enable this!
+        6: timestamped sulog dump (last 250 access/stat/exec/ioctl events)
+        Toolkit reboot commands require UID 0.
 
 config KSU_FULL_NAME_FORMAT
       string "KernelSU full name format"
